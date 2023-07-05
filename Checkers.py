@@ -62,7 +62,14 @@ class Player:
         self._pieces.append(piece)
 
     def remove_piece(self, piece: Piece):
-        self._pieces.remove(piece)
+        try:
+            self._pieces.remove(piece)
+        except ValueError:
+            if piece is not None:
+                for old_piece in self._pieces:
+                    if old_piece.row == piece.row and old_piece.column == piece.column:
+                        self._pieces.remove(old_piece)
+                        break
 
     @property
     def loser(self):
@@ -96,6 +103,14 @@ class Game:
     @property
     def winner(self):
         return self._winner
+
+    @property
+    def white_move(self):
+        return self._white_move
+
+    @property
+    def must_capture(self):
+        return self._must_capture
 
     def _create_board(self):
         for row in range(1, 9):
@@ -141,9 +156,7 @@ class Game:
 
     def prepare_before_player_move(self):
         self._get_possible_capture_moves()
-        if self._must_capture:
-            print("CAPTURE")
-        else:
+        if not self._must_capture:
             self._get_possible_simple_moves()
 
     def check_game_end(self) -> bool:
@@ -300,3 +313,4 @@ class Game:
             piece.make_King()
         elif not self._white_move and piece.row == 0:
             piece.make_King()
+
