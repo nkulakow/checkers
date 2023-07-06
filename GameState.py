@@ -50,18 +50,15 @@ class GameState:
     def get_heuristic_value(self, max_player: Color) -> float:
         if self.is_finished():
             return self.payoff(max_player)
-        if max_player == Color.WHITE and self._game.white_move:
-            if self._game.must_capture:
-                return len(self._game.possible_moves)/len(self._game.get_player_pieces(Color.BLACK))
-            else:
-                return len(self._game.get_player_pieces(Color.WHITE))/(
-                        12*len(self._game.get_player_pieces(Color.BLACK)))
-        elif max_player == Color.BLACK and not self._game.white_move:
-            if self._game.must_capture:
-                return len(self._game.possible_moves)/len(self._game.get_player_pieces(Color.WHITE))
-            else:
-                return len(self._game.get_player_pieces(Color.BLACK))/(
-                        12*len(self._game.get_player_pieces(Color.WHITE)))
-        return 0
-
-
+        if self._game.white_move:
+            current_player = Color.WHITE
+            other_player = Color.BLACK
+        else:
+            current_player = Color.BLACK
+            other_player = Color.WHITE
+        factor = 1 if max_player == current_player else - 1
+        if self._game.must_capture:
+            return factor*len(self._game.possible_moves)/len(self._game.get_player_pieces(other_player))
+        else:
+            return factor*len(self._game.get_player_pieces(current_player))/(
+                    12*len(self._game.get_player_pieces(other_player)))
