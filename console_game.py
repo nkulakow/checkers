@@ -5,12 +5,12 @@ from checkers_exceptions import InvalidMove, NoPieceChosen
 
 def computermove(game: Game, depth: int, max_move: bool, solver: Solver) -> bool:
     game.print_board_console()
-    for piece in game.black_player.pieces:
-        print("Piece ", piece.row, piece.column, end="      ")
-    print("")
     game.prepare_before_player_move()
     white_move = game.white_move
     move = solver.get_move(game, depth, max_move)
+    if len(move) == 0:
+        print("You won!")
+        return True
     game.move_piece(move[0], move[1], move[2], move[3])
     if game.check_game_end():
         print("You lost!")

@@ -1,4 +1,4 @@
-from Checkers import Game, MovePart
+from Checkers import Game, MovePart, Color
 import math
 from GameState import GameState
 import random
@@ -9,7 +9,7 @@ class Solver:
         self.max_player = None
 
     def get_move(self, game: Game, depth: int, move_max: bool) -> list[int]:
-        self.max_player = game.white_player
+        self.max_player = Color.WHITE
         best_moves = []
         minimum = math.inf
         maximum = -math.inf
@@ -30,6 +30,8 @@ class Solver:
                 minimum = result
             elif result == minimum or result == maximum:
                 best_moves.append((piece.row, piece.column, new_row, new_column))
+        if len(best_moves) == 0:
+            return []
         return random.choice(best_moves)
 
     def alfa_beta(

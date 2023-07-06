@@ -44,44 +44,12 @@ class Piece:
         self._column = new_column
 
 
-class Player:
-    def __init__(self, name: str, color: Color):
-        self._name = name
-        self._color = color
-        self._pieces = []
-
-    @property
-    def color(self):
-        return self._color
-
-    @property
-    def pieces(self):
-        return self._pieces
-
-    def add_piece(self, piece: Piece):
-        self._pieces.append(piece)
-
-    def remove_piece(self, piece: Piece):
-        try:
-            self._pieces.remove(piece)
-        except ValueError:
-            if piece is not None:
-                for old_piece in self._pieces:
-                    if old_piece.row == piece.row and old_piece.column == piece.column:
-                        self._pieces.remove(old_piece)
-                        break
-
-    @property
-    def loser(self):
-        return len(self._pieces) == 0
-
-
 class Game:
     def __init__(self, white_name: str = None, black_name: str = None):
         self._board = {}
         self._create_board()
-        self._white_player = Player(white_name, Color.WHITE)
-        self._black_player = Player(black_name, Color.BLACK)
+        self._white_name = white_name
+        self._black_name = black_name
         self._assign_pieces()
         self._white_move = True
         self._possible_moves = []
@@ -90,11 +58,11 @@ class Game:
 
     @property
     def white_player(self):
-        return self._white_player
+        return self._white_name
 
     @property
     def black_player(self):
-        return self._black_player
+        return self._black_name
 
     @property
     def possible_moves(self):
@@ -120,11 +88,20 @@ class Game:
 
     def _put_piece(self, color: Color, row: int, column: int):
         new_piece = Piece(color, row, column)
-        self._white_player.add_piece(new_piece) if color == Color.WHITE else self._black_player.add_piece(new_piece)
         self._board[row][column] = new_piece
 
     def get_piece(self, row: int, column: int) -> Piece | None:
         return self._board[row][column]
+
+    def get_player_pieces(self, color: Color) -> list[Piece]:
+        pieces = []
+        for row in range(1, 9):
+            for column in range(1, 9):
+                piece = self._board[row][column]
+                if piece is not None:
+                    if piece.color == color:
+                        pieces.append(piece)
+        return pieces
 
     def _assign_pieces(self):
         column_list = [2, 4, 6, 8]
@@ -163,11 +140,11 @@ class Game:
             self._get_possible_simple_moves()
 
     def check_game_end(self) -> bool:
-        if self._white_player.loser:
-            self._winner = self._black_player
+        if len(self.get_player_pieces(Color.WHITE)) == 0:
+            self._winner = Color.BLACK
             return True
-        elif self._black_player.loser:
-            self._winner = self._white_player
+        elif len(self.get_player_pieces(Color.BLACK)) == 0:
+            self._winner = Color.WHITE
             return True
         return False
 
@@ -230,12 +207,9 @@ class Game:
     def _capture_piece(self, piece: Piece, new_row: int, new_column: int):
         captured_row = new_row - 1 if new_row > piece.row else new_row + 1
         captured_column = new_column - 1 if new_column > piece.column else new_column + 1
-        captured = self._board[captured_row][captured_column]
+        if self._board[captured_row][captured_column] is None:
+            print("captured None")
         self._board[captured_row][captured_column] = None
-        if self._white_move:
-            self._black_player.remove_piece(captured)
-        else:
-            self._white_player.remove_piece(captured)
 
     def _check_piece_able_to_capture(self, piece: Piece):
         shifts = [(2, 2), (2, -2)] if self._white_move else [(-2, -2), (-2, 2)]
@@ -243,7 +217,8 @@ class Game:
             try:
                 self._check_capture_move_valid(piece.row, piece.column, piece.row + shift_row,
                                                piece.column + shift_column)
-                self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: piece.row + shift_row, MovePart.COLUMN: piece.column + shift_column})
+                self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: piece.row + shift_row,
+                                             MovePart.COLUMN: piece.column + shift_column})
             except (ch_exc.NoPawnToCapture, ch_exc.NonexistentBoardField, ch_exc.OccupiedField):
                 continue
 
@@ -253,7 +228,8 @@ class Game:
             try:
                 self._check_simple_move_valid(piece.row, piece.column, piece.row + shift_row,
                                               piece.column + shift_column)
-                self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: piece.row + shift_row, MovePart.COLUMN: piece.column + shift_column})
+                self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: piece.row + shift_row,
+                                             MovePart.COLUMN: piece.column + shift_column})
             except (ch_exc.NoPawnToCapture, ch_exc.NonexistentBoardField, ch_exc.OccupiedField):
                 continue
 
@@ -285,18 +261,19 @@ class Game:
         for row in range(row_range[0], row_range[1], row_range[2]):
             column = piece.column + (piece.row - row) * column_factor
             try:
-                if self._board[row][column] is not None:
+                if self._board[row][column] is not None and self._board[row][column].color != piece.color:
                     if self._board[row + row_range[2]][column + column_shift] is None:
-                        self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: row + row_range[2], MovePart.COLUMN: column + column_shift})
+                        self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: row + row_range[2],
+                                                     MovePart.COLUMN: column + column_shift})
                     return
             except KeyError:
                 return
 
     def _get_possible_capture_moves(self):
-        player = self._white_player if self._white_move else self._black_player
+        player_color = Color.WHITE if self._white_move else Color.BLACK
         self._possible_moves = []
         self._must_capture = False
-        for piece in player.pieces:
+        for piece in self.get_player_pieces(player_color):
             if piece.is_King:
                 self._check_king_able_to_capture(piece)
             else:
@@ -305,16 +282,17 @@ class Game:
             self._must_capture = True
 
     def _get_possible_simple_moves(self):
-        player = self._white_player if self._white_move else self._black_player
-        for piece in player.pieces:
+        player_color = Color.WHITE if self._white_move else Color.BLACK
+        self._possible_moves = []
+        self._must_capture = False
+        for piece in self.get_player_pieces(player_color):
             if piece.is_King:
                 self._check_king_able_to_simple_move(piece)
             else:
                 self._check_piece_able_to_simple_move(piece)
 
     def _check_if_king(self, piece: Piece):
-        if self._white_move and piece.row == 8:
+        if piece.color == Color.WHITE and piece.row == 8:
             piece.make_King()
-        elif not self._white_move and piece.row == 0:
+        elif piece.color == Color.BLACK and piece.row == 0:
             piece.make_King()
-
