@@ -135,14 +135,17 @@ class Game:
                 self._put_piece(color, row, column)
 
     def print_board_console(self):
-        print(" ", " ".join("12345678"))
+        print("  ", "  ".join("12345678"))
         for row in range(8, 0, -1):
-            print(row, end=" ")
+            print(row, end="  ")
             for column in self._board[row].keys():
                 if not self._board[row][column]:
-                    print("-", end=" ")
+                    print("-", end="  ")
                 else:
-                    print("W", end=" ") if self._board[row][column].color == Color.WHITE else print("B", end=" ")
+                    if self._board[row][column].is_King:
+                        print("W*", end=" ") if self._board[row][column].color == Color.WHITE else print("B*", end=" ")
+                    else:
+                        print("W", end="  ") if self._board[row][column].color == Color.WHITE else print("B", end="  ")
             print("")
 
     def move_piece(self, old_row: int, old_column: int, new_row: int, new_column: int):
@@ -175,9 +178,9 @@ class Game:
         else:
             self._capture_piece(piece, new_row=new_row, new_column=new_column)
             self._change_position_on_board(piece, new_row=new_row, new_column=new_column)
+            self._check_if_king(piece)
             self._possible_moves = []
             self._check_piece_able_to_capture(piece)
-            self._check_if_king(piece)
             if len(self._possible_moves) != 0:
                 return
         self._white_move = not self._white_move
@@ -277,9 +280,10 @@ class Game:
 
     def _check_quarter_for_king_capture(self, piece: Piece, row_up: bool, column_up: bool):
         row_range = (piece.row + 1, 9, 1) if row_up else (piece.row - 1, 0, -1)
-        column_shift = -1 if column_up == row_up else 1
+        column_shift = 1 if column_up else -1
+        column_factor = -1 if column_up == row_up else 1
         for row in range(row_range[0], row_range[1], row_range[2]):
-            column = piece.column + (piece.row - row) * column_shift
+            column = piece.column + (piece.row - row) * column_factor
             try:
                 if self._board[row][column] is not None:
                     if self._board[row + row_range[2]][column + column_shift] is None:

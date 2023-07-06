@@ -23,6 +23,7 @@ def computermove(game: Game, depth: int, max_move: bool, solver: Solver) -> bool
 def gamermove(game: Game) -> bool:
     game.print_board_console()
     game.prepare_before_player_move()
+    white_move = game.white_move
     move_not_made = True
     while move_not_made:
         try:
@@ -39,6 +40,8 @@ def gamermove(game: Game) -> bool:
     if game.check_game_end():
         print("You won!")
         return False
+    if game.white_move == white_move:
+        return gamermove(game)
     return True
 
 
