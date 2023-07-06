@@ -294,5 +294,5 @@ class Game:
     def _check_if_king(self, piece: Piece):
         if piece.color == Color.WHITE and piece.row == 8:
             piece.make_King()
-        elif piece.color == Color.BLACK and piece.row == 0:
+        elif piece.color == Color.BLACK and piece.row == 1:
             piece.make_King()
