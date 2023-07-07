@@ -57,8 +57,12 @@ class GameState:
             current_player = Color.BLACK
             other_player = Color.WHITE
         factor = 1 if max_player == current_player else - 1
-        if self._game.must_capture:
-            return factor*len(self._game.possible_moves)/len(self._game.get_player_pieces(other_player))
-        else:
-            return factor*len(self._game.get_player_pieces(current_player))/(
-                    12*len(self._game.get_player_pieces(other_player)))
+        if any(piece.is_King for piece in self._game.get_player_pieces(current_player)):
+            kings = [piece for piece in self._game.get_player_pieces(current_player) if piece.is_King]
+            other_kings = [piece for piece in self._game.get_player_pieces(other_player) if piece.is_King]
+            return factor*len(kings)/(12 + len(other_kings))
+        # if self._game.must_capture:
+        #     return factor/len(self._game.get_player_pieces(other_player))
+        # else:
+        return factor*len(self._game.get_player_pieces(current_player))/(
+                12+len(self._game.get_player_pieces(other_player)))

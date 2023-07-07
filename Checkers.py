@@ -44,6 +44,13 @@ class Piece:
         self._column = new_column
 
 
+def _check_if_king(piece: Piece):
+    if piece.color == Color.WHITE and piece.row == 8:
+        piece.make_King()
+    elif piece.color == Color.BLACK and piece.row == 1:
+        piece.make_King()
+
+
 class Game:
     def __init__(self, white_name: str = None, black_name: str = None):
         self._board = {}
@@ -146,18 +153,29 @@ class Game:
         elif len(self.get_player_pieces(Color.BLACK)) == 0:
             self._winner = Color.WHITE
             return True
+        self.prepare_before_player_move()
+        if len(self._possible_moves) == 0:
+            if self._white_move:
+                self._winner = Color.BLACK
+                return True
+            else:
+                self._winner = Color.WHITE
+                return True
         return False
 
     def _move_piece(self, piece: Piece, new_row: int, new_column: int):
         if not self._must_capture:
             self._change_position_on_board(piece, new_row=new_row, new_column=new_column)
-            self._check_if_king(piece)
+            _check_if_king(piece)
         else:
             self._capture_piece(piece, new_row=new_row, new_column=new_column)
             self._change_position_on_board(piece, new_row=new_row, new_column=new_column)
-            self._check_if_king(piece)
+            _check_if_king(piece)
             self._possible_moves = []
-            self._check_piece_able_to_capture(piece)
+            if piece.is_King:
+                self._check_king_able_to_capture(piece)
+            else:
+                self._check_piece_able_to_capture(piece)
             if len(self._possible_moves) != 0:
                 return
         self._white_move = not self._white_move
@@ -290,9 +308,3 @@ class Game:
                 self._check_king_able_to_simple_move(piece)
             else:
                 self._check_piece_able_to_simple_move(piece)
-
-    def _check_if_king(self, piece: Piece):
-        if piece.color == Color.WHITE and piece.row == 8:
-            piece.make_King()
-        elif piece.color == Color.BLACK and piece.row == 1:
-            piece.make_King()

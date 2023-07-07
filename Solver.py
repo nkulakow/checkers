@@ -30,8 +30,6 @@ class Solver:
                 minimum = result
             elif result == minimum or result == maximum:
                 best_moves.append((piece.row, piece.column, new_row, new_column))
-        if len(best_moves) == 0:
-            return []
         return random.choice(best_moves)
 
     def alfa_beta(

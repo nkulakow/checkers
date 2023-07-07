@@ -37,6 +37,8 @@ def gamermove(game: Game) -> bool:
             print("It is invalid move, try again")
         except NoPieceChosen:
             print("No piece was chosen")
+        except ValueError:
+            print("value error")
     if game.check_game_end():
         print("You won!")
         return False
