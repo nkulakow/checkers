@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+    <div class="board" id="board"></div>
+    <div id="board_data" data-board='{{ board|tojson }}'></div>
+    <div id="moves_data" data-moves='{{ moves|tojson }}'></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        // Define the board data as a JavaScript object
+
+        const boardData = JSON.parse(document.getElementById("board_data").dataset.board);
+
+        // Function to generate the board
+        function generateBoard() {
+            const boardElement = document.getElementById('board');
+
+
+            for (let row = 8; row >= 1; row--) {
+                for (let col = 1; col <= 8; col++) {
+                    const squareElement = document.createElement('div');
+                    squareElement.classList.add('square');
+                    squareElement.classList.add((row + col) % 2 === 0 ? 'white' : 'brown');
+                    squareElement.id = row + " " + col;
+
+                    const piece = boardData[row][col];
+                    if (piece) {
+                        const pieceElement = document.createElement('button');
+                        pieceElement.classList.add('piece');
+                        pieceElement.classList.add(piece.toLowerCase());
+                        pieceElement.onclick = function () {
+                            displayMoves(row, col)
+                        }
+
+                        squareElement.appendChild(pieceElement);
+                    }
+
+
+                    boardElement.appendChild(squareElement);
+                }
+            }
+        }
+
+        function displayMoves(row, col) {
+
+            const old_moves = document.querySelectorAll('.pos_move');
+            old_moves.forEach(move => {
+                move.remove();
+            })
+            const moves = JSON.parse(document.getElementById("moves_data").dataset.moves);
+            for (let i = 0; i < moves.length; i++) {
+                if (moves[i][0][0] === row && moves[i][0][1] === col) {
+                    console.log(row, col, moves[i][1][0], moves[i][1][1]);
+                    const movable_square = document.getElementById(moves[i][1][0] + " " + moves[i][1][1]);
+                    console.log(movable_square.id);
+                    const pos_move_element = document.createElement('button');
+                    pos_move_element.classList.add('pos_move');
+                    pos_move_element.onclick = function () {
+                        movePiece(row, col, moves[i][1][0], moves[i][1][1])
+                    }
+                    movable_square.appendChild(pos_move_element);
+                }
+            }
+
+        }
+
+        function movePiece(row, col, new_row, new_col) {
+            console.log(row, col, new_row, new_col);
+            const formData = {
+                row: row,
+                col: col,
+                new_row: new_row,
+                new_col: new_col
+            };
+            $.ajax({
+                url: '/movepiece',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    console.log(response);
+                    window.location.replace('/oneplayer');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
+        // Generate the board
+        generateBoard();
+
+    </script>
+
+
+{% endblock %}

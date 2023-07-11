@@ -308,3 +308,30 @@ class Game:
                 self._check_king_able_to_simple_move(piece)
             else:
                 self._check_piece_able_to_simple_move(piece)
+
+    def get_board_to_html(self):
+        board = {}
+        for row in range(8, 0, -1):
+            board[row] = {}
+            for column in self._board[row].keys():
+                if not self._board[row][column]:
+                    board[row][column] = None
+                else:
+                    if self._board[row][column].is_King:
+                        if self._board[row][column].color == Color.WHITE:
+                            board[row][column] = "WK"
+                        else:
+                            board[row][column] = "BK"
+                    else:
+                        if self._board[row][column].color == Color.WHITE:
+                            board[row][column] = "W"
+                        else:
+                            board[row][column] = "B"
+        return board
+
+    def get_possible_moves_to_html(self):
+        possible_moves = []
+        for move in self._possible_moves:
+            piece = move[MovePart.PIECE]
+            possible_moves.append([(piece.row, piece.column), (move[MovePart.ROW], move[MovePart.COLUMN])])
+        return possible_moves
