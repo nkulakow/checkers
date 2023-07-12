@@ -29,6 +29,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    cursor: pointer;
 }
 
 .w {
@@ -40,13 +41,65 @@
 }
 
 .wk {
+    position: relative;
+    display: inline-block;
+    padding: 20px 20px;
+    border-radius: 50%;
     background-color: #fff;
-    border: 3px solid #000;
+    border: none;
+    cursor: pointer;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .bk {
-    background-color: #000;
-    border: 3px solid #fff;
+    position: relative;
+    display: inline-block;
+    padding: 20px 20px;
+    border-radius: 50%;
+    background-color: #000000;
+    border: none;
+    cursor: pointer;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.crown {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #ffcc00;
+}
+
+.crown-left {
+    position: absolute;
+    top: -1px;
+    left: 30%;
+    transform: translateX(-70%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #ffcc00;
+}
+
+.crown-right {
+    position: absolute;
+    top: -1px;
+    left: 70%;
+    transform: translateX(-30%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #ffcc00;
 }
 
 .pos_move {
@@ -58,6 +111,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    cursor: pointer;
 }
 
 /*i want the pieces to be buttons that when i click them they will show me available moves (that are in parameter possieble_moves = {(piece_row, piece_column), (new_row, new_column)*/

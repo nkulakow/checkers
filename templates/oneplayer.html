@@ -5,6 +5,8 @@
     <div class="board" id="board"></div>
     <div id="board_data" data-board='{{ board|tojson }}'></div>
     <div id="moves_data" data-moves='{{ moves|tojson }}'></div>
+    <div id="whitemove_data" data-whitemove='{{ white_move|tojson }}'></div>
+    <div id="gameend_data" data-gameend="{{ game_end|tojson }}"></div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -29,6 +31,19 @@
                         const pieceElement = document.createElement('button');
                         pieceElement.classList.add('piece');
                         pieceElement.classList.add(piece.toLowerCase());
+
+                        if (piece === "WK" || piece === "BK") {
+                            const spanElement = document.createElement('span');
+                            spanElement.classList.add("crown");
+                            pieceElement.appendChild(spanElement);
+                            const spanElementLeft = document.createElement('span');
+                            spanElementLeft.classList.add("crown-left");
+                            pieceElement.appendChild(spanElementLeft);
+                            const spanElementRight = document.createElement('span');
+                            spanElementRight.classList.add("crown-right");
+                            pieceElement.appendChild(spanElementRight);
+                        }
+
                         pieceElement.onclick = function () {
                             displayMoves(row, col)
                         }
@@ -73,6 +88,7 @@
                 new_row: new_row,
                 new_col: new_col
             };
+            const white_move = document.getElementById("whitemove_data").dataset.whitemove;
             $.ajax({
                 url: '/movepiece',
                 type: 'POST',
@@ -80,7 +96,7 @@
                 data: JSON.stringify(formData),
                 success: function (response) {
                     console.log(response);
-                    window.location.replace('/oneplayer');
+                    window.location.replace('/beforecomputermove');
                 },
                 error: function (error) {
                     console.log(error);
@@ -90,6 +106,13 @@
 
         // Generate the board
         generateBoard();
+        const white_move = JSON.parse(document.getElementById("whitemove_data").dataset.whitemove);
+        const game_end = JSON.parse(document.getElementById("gameend_data").dataset.gameend);
+        if (game_end) {
+            console.log("Game end");
+        } else if (!white_move) {
+            window.location.replace('/playermove');
+        }
 
     </script>
 

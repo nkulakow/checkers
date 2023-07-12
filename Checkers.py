@@ -279,10 +279,11 @@ class Game:
         for row in range(row_range[0], row_range[1], row_range[2]):
             column = piece.column + (piece.row - row) * column_factor
             try:
-                if self._board[row][column] is not None and self._board[row][column].color != piece.color:
-                    if self._board[row + row_range[2]][column + column_shift] is None:
-                        self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: row + row_range[2],
-                                                     MovePart.COLUMN: column + column_shift})
+                if self._board[row][column] is not None:
+                    if self._board[row][column].color != piece.color:
+                        if self._board[row + row_range[2]][column + column_shift] is None:
+                            self._possible_moves.append({MovePart.PIECE: piece, MovePart.ROW: row + row_range[2],
+                                                         MovePart.COLUMN: column + column_shift})
                     return
             except KeyError:
                 return
