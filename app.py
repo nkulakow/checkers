@@ -69,6 +69,7 @@ def player_move():
 
 @app.route('/oneplayer', methods=["POST", "GET"])
 def one_player_game_start():
+    game.reset()
     game.prepare_before_player_move()
     board = game.get_board_to_html()
     moves = game.get_possible_moves_to_html()

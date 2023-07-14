@@ -1,12 +1,22 @@
 {% extends 'base.html' %}
 
 {% block body %}
+    <div id="board_data" data-board='{{ the_title|tojson }}'></div>
 
-<p>Choose game type</p>
-<div style="margin-top: 20px;">
-<button onclick="location.href='/oneplayer'" style="display: inline-block; padding: 10px;">Play with the computer</button>
-<button onclick="location.href='/twoplayers'" style="display: inline-block; padding: 10px;">Play with a friend</button>
-</div>
+
+    <div class="board-container">
+        <p>Choose game type</p>
+        <div style="margin-top: 20px;">
+            <button onclick="location.href='/oneplayer'" style="display: inline-block; padding: 10px;">Play with the
+                computer
+            </button>
+            <button onclick="location.href='/twoplayers'" style="display: inline-block; padding: 10px;">Play with a
+                friend
+            </button>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 
 

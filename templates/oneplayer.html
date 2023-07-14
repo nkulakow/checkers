@@ -2,11 +2,15 @@
 
 {% block body %}
 
-    <div class="board" id="board"></div>
+
     <div id="board_data" data-board='{{ board|tojson }}'></div>
     <div id="moves_data" data-moves='{{ moves|tojson }}'></div>
     <div id="whitemove_data" data-whitemove='{{ white_move|tojson }}'></div>
     <div id="gameend_data" data-gameend="{{ game_end|tojson }}"></div>
+
+    <div class="board-container">
+        <div class="board" id="board"></div>
+    </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>

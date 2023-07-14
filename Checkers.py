@@ -325,9 +325,9 @@ class Game:
                             board[row][column] = "BK"
                     else:
                         if self._board[row][column].color == Color.WHITE:
-                            board[row][column] = "W"
+                            board[row][column] = "WK"
                         else:
-                            board[row][column] = "B"
+                            board[row][column] = "BK"
         return board
 
     def get_possible_moves_to_html(self):
@@ -336,3 +336,6 @@ class Game:
             piece = move[MovePart.PIECE]
             possible_moves.append([(piece.row, piece.column), (move[MovePart.ROW], move[MovePart.COLUMN])])
         return possible_moves
+
+    def reset(self):
+        self.__init__(self._white_name, self._black_name)
