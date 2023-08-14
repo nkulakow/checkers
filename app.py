@@ -56,7 +56,7 @@ def player_move():
         return render_template('oneplayer.html', the_title="END", board=board, moves=[],
                                white_move=game.white_move, game_end=True)
     if not game.white_move:
-        computer_move(3)
+        computer_move(6)
     board = game.get_board_to_html()
     game.prepare_before_player_move()
     if not game.white_move:
@@ -74,6 +74,48 @@ def one_player_game_start():
     board = game.get_board_to_html()
     moves = game.get_possible_moves_to_html()
     return render_template('oneplayer.html', the_title="One player", board=board, moves=moves,
+                           white_move=game.white_move, game_end=False)
+
+
+@app.route('/beforeplayermove2players', methods=["POST", "GET"])
+def before_player_move_2_players():
+    board = game.get_board_to_html()
+    if game.check_game_end():
+        return render_template('twoplayers.html', the_title="END", board=board, moves=[],
+                               white_move=game.white_move, game_end=True)
+    game.prepare_before_player_move()
+    moves = game.get_possible_moves_to_html()
+    if game.white_move:
+        title = "First player"
+    else:
+        title = "Second player"
+    return render_template('twoplayers.html', the_title=title, board=board, moves=moves,
+                           white_move=game.white_move, game_end=False)
+
+
+@app.route('/playermove2players', methods=["POST", "GET"])
+def player_move_2_players():
+    if game.check_game_end():
+        board = game.get_board_to_html()
+        return render_template('twoplayers.html', the_title="END", board=board, moves=[],
+                               white_move=game.white_move, game_end=True)
+    board = game.get_board_to_html()
+    game.prepare_before_player_move()
+    moves = game.get_possible_moves_to_html()
+    if not game.white_move:
+        return render_template('twoplayers.html', the_title="Second player", board=board, moves=moves,
+                               white_move=game.white_move, game_end=False)
+    return render_template('twoplayers.html', the_title="First player", board=board, moves=moves,
+                           white_move=game.white_move, game_end=False)
+
+
+@app.route('/twoplayers', methods=["POST", "GET"])
+def two_players_game_start():
+    game.reset()
+    game.prepare_before_player_move()
+    board = game.get_board_to_html()
+    moves = game.get_possible_moves_to_html()
+    return render_template('twoplayers.html', the_title="Two players", board=board, moves=moves,
                            white_move=game.white_move, game_end=False)
 
 

@@ -325,9 +325,9 @@ class Game:
                             board[row][column] = "BK"
                     else:
                         if self._board[row][column].color == Color.WHITE:
-                            board[row][column] = "WK"
+                            board[row][column] = "W"
                         else:
-                            board[row][column] = "BK"
+                            board[row][column] = "B"
         return board
 
     def get_possible_moves_to_html(self):
